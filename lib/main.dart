@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,6 +7,14 @@ void main() {
   runApp(const MyApp());
 }
 
+enum GameState { initial, pause, playing, finish }
+
+// TODO:
+// 1. Each level mas 10 score, display level
+// 1. Disable play once clicked.
+// 2. Have a stop/quit game button.
+// 3. Main page page for selecting game
+// 4.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -34,6 +41,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String answerString = "";
+  GameState gameState = GameState.initial;
+
   int firstNumber = 0;
   int secondNumber = 0;
   bool result = false;
@@ -55,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void setCountDown() {
-    final reduceSecondsBy = 1;
+    const reduceSecondsBy = 1;
     setState(() {
       final seconds = countdownDuration.inSeconds - reduceSecondsBy;
       if (seconds < 0) {
@@ -111,8 +120,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void stop() {
+    stopTimer();
+    setState(() {
+      gameState = GameState.finish;
+    });
+  }
+
   void play() {
     setState(() {
+      gameState = GameState.playing;
       score = 0;
     });
 
@@ -136,16 +153,19 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Math Game"),
-        backgroundColor: Colors.amber,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Flexible(
-            child: Container(
-              color: Colors.pink,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("assets/images/Background.png"),
+              fit: BoxFit.fill),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 60,
+            ),
+            Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -165,7 +185,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                       ElevatedButton(
-                        onPressed: () => play(),
+                        onPressed: gameState == GameState.playing
+                            ? null
+                            : () => play(),
                         child: const Text("Play"),
                       ),
                       Row(
@@ -187,132 +209,138 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-          ),
-          Flexible(
-            child: Container(
-              color: Colors.brown,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        firstNumber.toString(),
-                        style: const TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.bold),
-                      ),
-                      const Text(
-                        "*",
-                        style: TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        secondNumber.toString(),
-                        style: const TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.bold),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "=",
+            Flexible(
+              child: Container(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          firstNumber.toString(),
+                          style: const TextStyle(
+                              fontSize: 40, fontWeight: FontWeight.bold),
+                        ),
+                        const Text(
+                          "*",
                           style: TextStyle(
                               fontSize: 40, fontWeight: FontWeight.bold),
                         ),
-                      ),
-                      Text(
-                        answerString,
-                        style: const TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.yellow),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: isCheckingAnswer
-                            ? (result
-                                ? const Icon(
-                                    Icons.done,
-                                    color: Colors.green,
-                                  )
-                                : const Icon(
-                                    Icons.close,
-                                    color: Colors.red,
-                                  ))
-                            : Container(),
-                      )
-                    ],
-                  ),
-                  Container(
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("1"),
-                              child: const Text("1"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("2"),
-                              child: const Text("2"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("3"),
-                              child: const Text("3"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("4"),
-                              child: const Text("4"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("5"),
-                              child: const Text("5"),
-                            ),
-                          ],
+                        Text(
+                          secondNumber.toString(),
+                          style: const TextStyle(
+                              fontSize: 40, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(
-                          height: 20,
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            "=",
+                            style: TextStyle(
+                                fontSize: 40, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("6"),
-                              child: const Text("6"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("7"),
-                              child: const Text("7"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("8"),
-                              child: const Text("8"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("9"),
-                              child: const Text("9"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => onNumberPressed("0"),
-                              child: const Text("0"),
-                            ),
-                          ],
+                        Text(
+                          answerString,
+                          style: const TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.yellow),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: isCheckingAnswer
+                              ? (result
+                                  ? const Icon(
+                                      Icons.done,
+                                      color: Colors.green,
+                                    )
+                                  : const Icon(
+                                      Icons.close,
+                                      color: Colors.red,
+                                    ))
+                              : Container(),
+                        )
                       ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  ElevatedButton(
-                    onPressed: () => checkAnswer(),
-                    child: const Text("Submit"),
-                  )
-                ],
+                    Container(
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("1"),
+                                child: const Text("1"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("2"),
+                                child: const Text("2"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("3"),
+                                child: const Text("3"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("4"),
+                                child: const Text("4"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("5"),
+                                child: const Text("5"),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("6"),
+                                child: const Text("6"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("7"),
+                                child: const Text("7"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("8"),
+                                child: const Text("8"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("9"),
+                                child: const Text("9"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => onNumberPressed("0"),
+                                child: const Text("0"),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    ElevatedButton(
+                      onPressed: gameState == GameState.playing
+                          ? () => checkAnswer()
+                          : null,
+                      child: const Text("Submit"),
+                    ),
+                    ElevatedButton(
+                      onPressed:
+                          gameState == GameState.playing ? () => stop() : null,
+                      child: const Text("Stop"),
+                    )
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
