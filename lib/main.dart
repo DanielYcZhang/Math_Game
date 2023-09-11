@@ -150,6 +150,22 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  List<Widget> getResultImages() {
+    var numberArray = answerString.split(""); // "12" => ["1", "2"]
+    // var stringValues = "a|b|c"; stringValues.split("|") => ["a", "b","c",] ,
+
+    var l = numberArray
+        .map(
+          (numStr) => Image.asset(
+            "assets/images/$numStr.png",
+            height: 50,
+            width: 50,
+          ),
+        )
+        .toList();
+    return l;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 60,
             ),
             Flexible(
@@ -216,36 +232,37 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          firstNumber.toString(),
-                          style: const TextStyle(
-                              fontSize: 40, fontWeight: FontWeight.bold),
+                        Image.asset(
+                          "assets/images/$firstNumber.png",
+                          height: 100,
+                          width: 100,
                         ),
-                        const Text(
-                          "*",
-                          style: TextStyle(
-                              fontSize: 40, fontWeight: FontWeight.bold),
+                        Image.asset(
+                          "assets/images/multiply.png",
+                          height: 50,
+                          width: 50,
                         ),
-                        Text(
-                          secondNumber.toString(),
-                          style: const TextStyle(
-                              fontSize: 40, fontWeight: FontWeight.bold),
+                        Image.asset(
+                          "assets/images/$secondNumber.png",
+                          height: 100,
+                          width: 100,
                         ),
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "=",
-                            style: TextStyle(
-                                fontSize: 40, fontWeight: FontWeight.bold),
+                          child: Image.asset(
+                            "assets/images/equal.png",
+                            height: 50,
+                            width: 50,
                           ),
                         ),
-                        Text(
-                          answerString,
-                          style: const TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.yellow),
-                        ),
+                        Row(children: getResultImages()),
+                        // Text(
+                        //   answerString,
+                        //   style: const TextStyle(
+                        //       fontSize: 40,
+                        //       fontWeight: FontWeight.bold,
+                        //       color: Colors.black),
+                        // ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: isCheckingAnswer
